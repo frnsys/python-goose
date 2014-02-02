@@ -22,10 +22,13 @@ limitations under the License.
 """
 import re
 import os
-from urlparse import urlparse, urljoin
 from goose.utils import FileHelper
 from goose.images.image import Image
 from goose.images.utils import ImageUtils
+try:
+    from urlparse import urlparse, urljoin
+except ImportError:
+    from urllib.parse import urlparse, urljoin
 
 KNOWN_IMG_DOM_NAMES = [
     "yn-story-related-media",
@@ -124,7 +127,7 @@ class UpgradedImageIExtractor(ImageExtractor):
         if good_images:
             scored_images = self.fetch_images(good_images, parent_depth_level)
             if scored_images:
-                highscore_image = sorted(scored_images.items(),
+                highscore_image = sorted(list(scored_images.items()),
                                         key=lambda x: x[1], reverse=True)[0][0]
                 main_image = Image()
                 main_image.src = highscore_image.src
@@ -243,6 +246,7 @@ class UpgradedImageIExtractor(ImageExtractor):
         return False
 
     def get_node_images(self, node):
+
         images = self.parser.getElementsByTag(node, tag='img')
         if images is not None and len(images) < 1:
             return None
@@ -278,6 +282,7 @@ class UpgradedImageIExtractor(ImageExtractor):
         good_images = []
         filtered_images = []
         images = self.get_node_images(node)
+
         if images:
             filtered_images = self.filter_bad_names(images)
         if filtered_images:
@@ -360,7 +365,7 @@ class UpgradedImageIExtractor(ImageExtractor):
           are on specific sites
         """
         domain = self.get_clean_domain()
-        if domain in self.custom_site_mapping.keys():
+        if domain in list(self.custom_site_mapping.keys()):
             classes = self.custom_site_mapping.get(domain).split('|')
             for classname in classes:
                 KNOWN_IMG_DOM_NAMES.append(classname)

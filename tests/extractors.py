@@ -23,7 +23,7 @@ limitations under the License.
 import os
 import json
 
-from base import BaseMockTests, MockResponse
+from .base import BaseMockTests, MockResponse
 
 from goose import Goose
 from goose.utils import FileHelper
@@ -81,16 +81,16 @@ class TestExtractionBase(BaseMockTests):
         # print result_value
 
         # cleaned_text is Null
-        msg = u"Resulting article text was NULL!"
+        msg = "Resulting article text was NULL!"
         self.assertNotEqual(result_value, None, msg=msg)
 
         # cleaned_text length
-        msg = u"Article text was not as long as expected beginning!"
+        msg = "Article text was not as long as expected beginning!"
         self.assertTrue(len(expected_value) <= len(result_value), msg=msg)
 
         # clean_text value
         result_value = result_value[0:len(expected_value)]
-        msg = u"The beginning of the article text was not as expected!"
+        msg = "The beginning of the article text was not as expected!"
         self.assertEqual(expected_value, result_value, msg=msg)
 
     def assert_tags(self, field, expected_value, result_value):
@@ -102,8 +102,8 @@ class TestExtractionBase(BaseMockTests):
         expected_value = set(expected_value)
 
         # check if both have the same number of items
-        msg = (u"expected tags set and result tags set"
-                u"don't have the same number of items")
+        msg = ("expected tags set and result tags set"
+                "don't have the same number of items")
         self.assertEqual(len(result_value), len(expected_value), msg=msg)
 
         # check if each tag in result_value is in expected_value
@@ -125,7 +125,7 @@ class TestExtractionBase(BaseMockTests):
                 continue
 
             # default assertion
-            msg = u"Error %s" % field
+            msg = "Error %s" % field
             self.assertEqual(expected_value, result_value, msg=msg)
 
     def extract(self, instance):

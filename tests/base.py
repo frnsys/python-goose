@@ -21,11 +21,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import urllib2
+try:
+    from urllib2 import addinfourl
+    import urllib2 as request
+except ImportError:
+    from urllib import request
+    from urllib.response import addinfourl
 import unittest
 import socket
 
-from StringIO import StringIO
+from io import StringIO, BytesIO
 
 
 # Response
@@ -45,13 +50,16 @@ class MockResponse():
     def response(self, req):
         data = self.content(req)
         url = req.get_full_url()
-        resp = urllib2.addinfourl(StringIO(data), data, url)
+        if isinstance(data, str):
+            resp = addinfourl(StringIO(data), data, url)
+        else:
+            resp = addinfourl(BytesIO(data), data, url)
         resp.code = self.code
         resp.msg = self.msg
         return resp
 
 
-class MockHTTPHandler(urllib2.HTTPHandler, urllib2.HTTPSHandler):
+class MockHTTPHandler(request.HTTPHandler, request.HTTPSHandler):
     """\
     Mocked HTTPHandler in order to query APIs locally
     """
@@ -66,8 +74,8 @@ class MockHTTPHandler(urllib2.HTTPHandler, urllib2.HTTPSHandler):
 
     @staticmethod
     def patch(cls):
-        opener = urllib2.build_opener(MockHTTPHandler)
-        urllib2.install_opener(opener)
+        opener = request.build_opener(MockHTTPHandler)
+        request.install_opener(opener)
         # dirty !
         for h in opener.handlers:
             if isinstance(h, MockHTTPHandler):
@@ -76,8 +84,7 @@ class MockHTTPHandler(urllib2.HTTPHandler, urllib2.HTTPSHandler):
 
     @staticmethod
     def unpatch():
-        # urllib2
-        urllib2._opener = None
+        request._opener = None
 
 
 class BaseMockTests(unittest.TestCase):

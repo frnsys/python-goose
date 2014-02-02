@@ -22,14 +22,17 @@ limitations under the License.
 """
 import re
 from copy import deepcopy
-from urlparse import urlparse, urljoin
+try:
+    from urlparse import urlparse, urljoin
+except ImportError:
+    from urllib.parse import urlparse, urljoin
 from goose.utils import StringSplitter
 from goose.utils import StringReplacement
 from goose.utils import ReplaceSequence
 
 MOTLEY_REPLACEMENT = StringReplacement("&#65533;", "")
-ESCAPED_FRAGMENT_REPLACEMENT = StringReplacement(u"#!", u"?_escaped_fragment_=")
-TITLE_REPLACEMENTS = ReplaceSequence().create(u"&raquo;").append(u"»")
+ESCAPED_FRAGMENT_REPLACEMENT = StringReplacement("#!", "?_escaped_fragment_=")
+TITLE_REPLACEMENTS = ReplaceSequence().create("&raquo;").append("»")
 PIPE_SPLITTER = StringSplitter("\\|")
 DASH_SPLITTER = StringSplitter(" - ")
 ARROWS_SPLITTER = StringSplitter("»")
@@ -90,7 +93,7 @@ class ContentExtractor(object):
             used_delimeter = True
 
         # split title with »
-        if not used_delimeter and u'»' in title_text:
+        if not used_delimeter and '»' in title_text:
             title_text = self.split_title(title_text, ARROWS_SPLITTER)
             used_delimeter = True
 
@@ -418,7 +421,7 @@ class ContentExtractor(object):
         current_score = 0
         score_string = self.parser.getAttribute(node, 'gravityScore')
         if score_string:
-            current_score = int(score_string)
+            current_score = float(score_string)
 
         new_score = current_score + addToScore
         self.parser.setAttribute(node, "gravityScore", str(new_score))
@@ -430,7 +433,7 @@ class ContentExtractor(object):
         current_score = 0
         count_string = self.parser.getAttribute(node, 'gravityNodes')
         if count_string:
-            current_score = int(count_string)
+            current_score = float(count_string)
 
         new_score = current_score + add_to_count
         self.parser.setAttribute(node, "gravityNodes", str(new_score))
@@ -473,7 +476,7 @@ class ContentExtractor(object):
         grvScoreString = self.parser.getAttribute(node, 'gravityScore')
         if not grvScoreString:
             return None
-        return int(grvScoreString)
+        return float(grvScoreString)
 
     def nodes_to_check(self, doc):
         """\

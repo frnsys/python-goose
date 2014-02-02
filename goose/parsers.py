@@ -20,8 +20,12 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+
+try:
+    from lxml.html.soupparser import fromstring
+except:
+    from lxml.html import fromstring
 import lxml.html
-from lxml.html import soupparser
 from lxml import etree
 from copy import deepcopy
 from goose.text import innerTrim
@@ -51,12 +55,12 @@ class Parser(object):
     @classmethod
     def fromstring(self, html):
         html = encodeValue(html)
-        self.doc = lxml.html.fromstring(html)
+        self.doc = fromstring(html)
         return self.doc
 
     @classmethod
     def nodeToString(self, node):
-        return etree.tostring(node)
+        return etree.tostring(node).decode('utf-8')
 
     @classmethod
     def replaceTag(self, node, tag):
@@ -162,11 +166,11 @@ class Parser(object):
                 if prev is None:
                     if not parent.text:
                         parent.text = ''
-                    parent.text += u' ' + node.tail
+                    parent.text += ' ' + node.tail
                 else:
                     if not prev.tail:
                         prev.tail = ''
-                    prev.tail += u' ' + node.tail
+                    prev.tail += ' ' + node.tail
             node.clear()
             parent.remove(node)
 
@@ -177,7 +181,7 @@ class Parser(object):
     @classmethod
     def getText(self, node):
         txts = [i for i in node.itertext()]
-        return innerTrim(u' '.join(txts).strip())
+        return innerTrim(' '.join(txts).strip())
 
     @classmethod
     def previousSiblings(self, node):
@@ -240,5 +244,5 @@ class ParserSoup(Parser):
     @classmethod
     def fromstring(self, html):
         html = encodeValue(html)
-        self.doc = soupparser.fromstring(html)
+        self.doc = fromstring(html)
         return self.doc

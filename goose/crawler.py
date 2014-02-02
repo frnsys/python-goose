@@ -104,6 +104,7 @@ class Crawler(object):
         # cleanup tmp file
         self.relase_resources(article)
 
+
         return article
 
     def get_parse_candidate(self, crawl_candidate):
