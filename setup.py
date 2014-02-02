@@ -22,6 +22,7 @@ limitations under the License.
 """
 
 import os
+import sys
 from setuptools import setup, find_packages
 from imp import load_source
 
@@ -40,6 +41,7 @@ CLASSIFIERS = [
     'Programming Language :: Python :: 2',
     'Programming Language :: Python :: 2.6',
     'Programming Language :: Python :: 2.7',
+    'Programming Language :: Python :: 3',
     'Topic :: Internet',
     'Topic :: Utilities',
     'Topic :: Software Development :: Libraries :: Python Modules']
@@ -52,6 +54,13 @@ try:
         long_description = f.read()
 except:
     long_description = description
+
+# Python 3
+install_requires = ['Pillow', 'lxml', 'cssselect', 'jieba', 'nltk>=3.0a3']
+
+# Python 2
+if sys.version_info <= (3,0):
+    install_requires.append(['beautifulsoup'])
 
 setup(name='goose-extractor',
     version=version.__version__,
@@ -66,6 +75,7 @@ setup(name='goose-extractor',
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
-    install_requires=['Pillow', 'lxml', 'cssselect', 'jieba', 'beautifulsoup', 'nltk'],
+    dependency_links = ['https://github.com/nltk/nltk/archive/develop.zip#egg=nltk-3.0a3'],
+    install_requires=install_requires,
     test_suite="tests"
 )
